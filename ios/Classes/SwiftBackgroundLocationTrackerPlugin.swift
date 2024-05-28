@@ -112,7 +112,42 @@ fileprivate enum BackgroundMethods: String {
 
 extension SwiftBackgroundLocationTrackerPlugin: CLLocationManagerDelegate {
     private static let BACKGROUND_CHANNEL_NAME = "com.icapps.background_location_tracker/background_channel"
-    
+    public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit){
+        let coordinate = visit.coordinate
+        
+        CustomLogger.log(message: "NEW LOCATION: \(coordinate.latitude): \(coordinate.longitude)")
+        
+        var locationData: [String: Any] = [
+            "lat": coordinate.latitude,
+            "lon": coordinate.longitude,
+            "alt": 0,
+            "vertical_accuracy": 0,
+            "horizontal_accuracy": 0,
+            "course": 0,
+            "course_accuracy": -1,
+            "speed": 0,
+            "speed_accuracy": 0,
+            "logging_enabled": SharedPrefsUtil.isLoggingEnabled(),
+        ]
+        
+        if SwiftBackgroundLocationTrackerPlugin.initializedBackgroundCallbacks {
+            CustomLogger.log(message: "INITIALIZED, ready to send location updates")
+            SwiftBackgroundLocationTrackerPlugin.sendLocationupdate(locationData: locationData)
+        } else {
+            CustomLogger.log(message: "NOT YET INITIALIZED. Cache the location data")
+            SwiftBackgroundLocationTrackerPlugin.locationData = locationData
+            
+            if !SwiftBackgroundLocationTrackerPlugin.initializedBackgroundCallbacksStarted {
+                SwiftBackgroundLocationTrackerPlugin.initializedBackgroundCallbacksStarted = true
+            
+                guard let flutterEngine = SwiftBackgroundLocationTrackerPlugin.getFlutterEngine() else {
+                    CustomLogger.log(message: "No Flutter engine available ...")
+                    return
+                }
+                SwiftBackgroundLocationTrackerPlugin.initBackgroundMethodChannel(flutterEngine: flutterEngine)
+            }
+        }
+    }
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else {
             CustomLogger.log(message: "No location ...")
