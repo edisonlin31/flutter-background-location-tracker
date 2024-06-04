@@ -1,6 +1,5 @@
 package com.icapps.background_location_tracker.utils
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -65,7 +64,7 @@ internal object NotificationUtil {
         val title = if (SharedPrefsUtil.isNotificationLocationUpdatesEnabled(context)) {
             String.format("Location Update: %s", DateFormat.getDateTimeInstance().format(Date()))
         } else {
-            context.getAppName()
+            SharedPrefsUtil.getNotificationTitle(context) ?: context.getAppName()
         }
 
         val text = if (SharedPrefsUtil.isNotificationLocationUpdatesEnabled(context)) {

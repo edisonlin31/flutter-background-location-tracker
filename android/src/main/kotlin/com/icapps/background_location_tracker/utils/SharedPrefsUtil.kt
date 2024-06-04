@@ -12,6 +12,7 @@ internal object SharedPrefsUtil {
     private const val KEY_DISTANCE_FILTER = "background.location.tracker.manager.DISTANCE_FILTER"
 
     private const val KEY_NOTIFICATION_BODY = "background.location.tracker.manager.NOTIFICATION_BODY"
+    private const val KEY_NOTIFICATION_TITLE = "background.location.tracker.manager.NOTIFICATION_TITLE"
     private const val KEY_NOTIFICATION_ICON = "background.location.tracker.manager.NOTIFICATION_ICON"
     private const val KEY_NOTIFICATION_LOCATION_UPDATES_ENABLED = "background.location.tracker.manager.ENABLE_NOTIFICATION_LOCATION_UPDATES"
     private const val KEY_CANCEL_TRACKING_ACTION_TEXT = "background.location.tracker.manager.ENABLE_CANCEL_TRACKING_TEXT"
@@ -55,22 +56,23 @@ internal object SharedPrefsUtil {
 
     fun saveDistanceFilter(ctx: Context, filter: Float) {
         ctx.prefs()
-            .edit()
-            .putFloat(KEY_DISTANCE_FILTER, filter)
-            .apply()
+                .edit()
+                .putFloat(KEY_DISTANCE_FILTER, filter)
+                .apply()
     }
 
     fun isLoggingEnabled(ctx: Context): Boolean = ctx.prefs().getBoolean(KEY_LOGGING_ENABED, false)
 
     fun trackingInterval(ctx: Context): Long = ctx.prefs().getLong(KEY_TRACKING_INTERVAL, 10000)
 
-    fun distanceFilter(ctx: Context) : Float = ctx.prefs().getFloat(KEY_DISTANCE_FILTER, 0.0f)
+    fun distanceFilter(ctx: Context): Float = ctx.prefs().getFloat(KEY_DISTANCE_FILTER, 0.0f)
 
     //NotificationConfig
-    fun saveNotificationConfig(ctx: Context, notificationBody: String, notificationIcon: String?, cancelTrackingActionText: String, enableNotificationLocationUpdates: Boolean, enableCancelTrackingAction: Boolean) {
+    fun saveNotificationConfig(ctx: Context, notificationTitle: String?, notificationBody: String, notificationIcon: String?, cancelTrackingActionText: String, enableNotificationLocationUpdates: Boolean, enableCancelTrackingAction: Boolean) {
         ctx.prefs()
                 .edit()
                 .putString(KEY_NOTIFICATION_BODY, notificationBody)
+                .putString(KEY_NOTIFICATION_TITLE, notificationTitle)
                 .putString(KEY_NOTIFICATION_ICON, notificationIcon)
                 .putString(KEY_CANCEL_TRACKING_ACTION_TEXT, cancelTrackingActionText)
                 .putBoolean(KEY_NOTIFICATION_LOCATION_UPDATES_ENABLED, enableNotificationLocationUpdates)
@@ -79,6 +81,8 @@ internal object SharedPrefsUtil {
     }
 
     fun getNotificationBody(ctx: Context): String = ctx.prefs().getString(KEY_NOTIFICATION_BODY, "Background tracking active. Tap to open.")!!
+
+    fun getNotificationTitle(ctx: Context): String? = ctx.prefs().getString(KEY_NOTIFICATION_TITLE, null)
 
     fun getNotificationIcon(ctx: Context): String? = ctx.prefs().getString(KEY_NOTIFICATION_ICON, null)
 

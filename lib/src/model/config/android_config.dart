@@ -18,6 +18,9 @@ class AndroidConfig {
   ///The message that will be shown in the permanent notification
   final String notificationBody;
 
+  ///The message that will be shown in the permanent notification
+  final String? notificationTitle;
+
   /// The icon string will be used to get the id of an icon that is added to you android native project
   final String? notificationIcon;
 
@@ -42,6 +45,7 @@ class AndroidConfig {
   const AndroidConfig({
     this.channelName = 'Background Tracking',
     this.notificationBody = 'Background tracking active. Tap to open.',
+    this.notificationTitle,
     this.notificationIcon,
     this.enableNotificationLocationUpdates = false,
     this.cancelTrackingActionText = 'Stop Tracking',
