@@ -59,7 +59,8 @@ internal object NotificationUtil {
         val clickPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getActivity(context, 0, context.packageManager.getLaunchIntentForPackage(context.packageName), PendingIntent.FLAG_IMMUTABLE)
         } else {
-            PendingIntent.getActivity(context, 0, context.packageManager.getLaunchIntentForPackage(context.packageName), 0)
+            PendingIntent.getActivity(context, 0, context.packageManager.getLaunchIntentForPackage(context.packageName),
+                PendingIntent.FLAG_IMMUTABLE)
         }
 
         val title = if (SharedPrefsUtil.isNotificationLocationUpdatesEnabled(context)) {
