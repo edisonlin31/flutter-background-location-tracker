@@ -21,17 +21,13 @@ internal object FlutterBackgroundManager {
 
     private val flutterLoader = FlutterLoader()
 
-    private var flutterEngine: FlutterEngine? = null
-
     private fun getInitializedFlutterEngine(ctx: Context): FlutterEngine {
-        
-        if (flutterEngine == null) {
-            Logger.debug("BackgroundManager", "Creating new engine")
-            flutterEngine = FlutterEngine(ctx)
-            // Register plugins
-            BackgroundLocationTrackerPlugin.pluginRegistryCallback?.registerWith(ShimPluginRegistry(flutterEngine!!))
-        }
-        return flutterEngine!!
+        Logger.debug("BackgroundManager", "Creating new engine")
+
+        val engine = FlutterEngine(ctx)
+        //Backwards compatibility with v1. We register all the user's plugins.
+        BackgroundLocationTrackerPlugin.pluginRegistryCallback?.registerWith(ShimPluginRegistry(engine))
+        return engine
     }
 
     fun sendLocation(ctx: Context, location: Location) {
@@ -83,13 +79,14 @@ internal object FlutterBackgroundManager {
         data["speed"] = if (location.hasSpeed()) location.speed else -1.0
         data["speed_accuracy"] = -1.0
         data["logging_enabled"] = SharedPrefsUtil.isLoggingEnabled(ctx)
-        Logger.debug("BackgroundManager Data", "$data")
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             data["vertical_accuracy"] = if (location.hasVerticalAccuracy()) location.verticalAccuracyMeters else -1.0
             data["course_accuracy"] = if (location.hasBearingAccuracy()) location.bearingAccuracyDegrees else -1.0
             data["speed_accuracy"] = if (location.hasSpeedAccuracy()) location.speedAccuracyMetersPerSecond else -1.0
         }
 
+        // Invoke the method with data as a Map
         channel.invokeMethod("onLocationUpdate", data, object : MethodChannel.Result {
             override fun success(result: Any?) {
                 Logger.debug("BackgroundManager", "Got success, destroy engine!")
@@ -97,12 +94,12 @@ internal object FlutterBackgroundManager {
             }
 
             override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
-                Logger.debug("BackgroundManager", "Got error, destroy engine! $errorCode - $errorMessage : $errorDetails")
+                Logger.debug("BackgroundManager", "Got error: $errorCode - $errorMessage : $errorDetails")
                 engine.destroy()
             }
 
             override fun notImplemented() {
-                Logger.debug("BackgroundManager", "Got not implemented, destroy engine!")
+                Logger.debug("BackgroundManager", "Method not implemented!")
                 engine.destroy()
             }
         })
