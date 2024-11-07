@@ -1,5 +1,6 @@
 package com.icapps.background_location_tracker.utils
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -58,13 +59,14 @@ internal object NotificationUtil {
         val clickPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getActivity(context, 0, context.packageManager.getLaunchIntentForPackage(context.packageName), PendingIntent.FLAG_IMMUTABLE)
         } else {
-            PendingIntent.getActivity(context, 0, context.packageManager.getLaunchIntentForPackage(context.packageName), 0)
+            PendingIntent.getActivity(context, 0, context.packageManager.getLaunchIntentForPackage(context.packageName),
+                PendingIntent.FLAG_IMMUTABLE)
         }
 
         val title = if (SharedPrefsUtil.isNotificationLocationUpdatesEnabled(context)) {
             String.format("Location Update: %s", DateFormat.getDateTimeInstance().format(Date()))
         } else {
-            SharedPrefsUtil.getNotificationTitle(context) ?: context.getAppName()
+            context.getAppName()
         }
 
         val text = if (SharedPrefsUtil.isNotificationLocationUpdatesEnabled(context)) {
