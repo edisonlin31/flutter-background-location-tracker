@@ -46,7 +46,17 @@ class BackgroundChannel {
         data['course_accuracy'] as double; // ignore: avoid_as
     final speed = data['speed'] as double; // ignore: avoid_as
     final speedAccuracy = data['speed_accuracy'] as double; // ignore: avoid_as
-     Logger.debug("BackgroundManager", "Got success, destroy engine!")
+    print("go herere");
+    print(BackgroundLocationUpdateData(
+        lat: lat,
+        lon: lon,
+        horizontalAccuracy: horizontalAccuracy,
+        alt: alt,
+        verticalAccuracy: verticalAccuracy,
+        course: course,
+        courseAccuracy: courseAccuracy,
+        speed: speed,
+        speedAccuracy: speedAccuracy));
     await callback(BackgroundLocationUpdateData(
         lat: lat,
         lon: lon,
