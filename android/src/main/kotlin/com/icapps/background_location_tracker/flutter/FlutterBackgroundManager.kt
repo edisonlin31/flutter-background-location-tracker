@@ -21,13 +21,17 @@ internal object FlutterBackgroundManager {
 
     private val flutterLoader = FlutterLoader()
 
-    private fun getInitializedFlutterEngine(ctx: Context): FlutterEngine {
-        Logger.debug("BackgroundManager", "Creating new engine")
+    private var flutterEngine: FlutterEngine? = null
 
-        val engine = FlutterEngine(ctx)
-        //Backwards compatibility with v1. We register all the user's plugins.
-        BackgroundLocationTrackerPlugin.pluginRegistryCallback?.registerWith(ShimPluginRegistry(engine))
-        return engine
+    private fun getInitializedFlutterEngine(ctx: Context): FlutterEngine {
+        
+        if (flutterEngine == null) {
+            Logger.debug("BackgroundManager", "Creating new engine")
+            flutterEngine = FlutterEngine(ctx)
+            // Register plugins
+            BackgroundLocationTrackerPlugin.pluginRegistryCallback?.registerWith(ShimPluginRegistry(flutterEngine!!))
+        }
+        return flutterEngine!!
     }
 
     fun sendLocation(ctx: Context, location: Location) {
@@ -79,7 +83,7 @@ internal object FlutterBackgroundManager {
         data["speed"] = if (location.hasSpeed()) location.speed else -1.0
         data["speed_accuracy"] = -1.0
         data["logging_enabled"] = SharedPrefsUtil.isLoggingEnabled(ctx)
-
+        Logger.debug("BackgroundManager Data", "${data}")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             data["vertical_accuracy"] = if (location.hasVerticalAccuracy()) location.verticalAccuracyMeters else -1.0
             data["course_accuracy"] = if (location.hasBearingAccuracy()) location.bearingAccuracyDegrees else -1.0
